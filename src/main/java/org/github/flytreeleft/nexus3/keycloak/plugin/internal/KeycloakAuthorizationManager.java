@@ -13,6 +13,7 @@
 package org.github.flytreeleft.nexus3.keycloak.plugin.internal;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import javax.enterprise.inject.Typed;
 import javax.inject.Named;
@@ -31,46 +32,58 @@ import org.sonatype.nexus.security.role.Role;
 @Named("Keycloak")
 @Typed(AuthorizationManager.class)
 public class KeycloakAuthorizationManager extends AbstractReadOnlyAuthorizationManager {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger		logger	= LoggerFactory.getLogger(getClass());
 
-    private NexusKeycloakClient client;
+	private NexusKeycloakClient	client;
 
-    public KeycloakAuthorizationManager() {
-        this(NexusKeycloakClientLoader.loadDefaultClient());
-    }
+	public KeycloakAuthorizationManager() {
+		this(NexusKeycloakClientLoader.loadDefaultClient());
+	}
 
-    public KeycloakAuthorizationManager(NexusKeycloakClient client) {
-        this.logger.info(getClass().getName() + " is starting...");
-        this.client = client;
-    }
+	public KeycloakAuthorizationManager(NexusKeycloakClient client) {
+		this.logger.info(getClass().getName() + " is starting...");
+		this.client = client;
+	}
 
-    @Override
-    public String getSource() {
-        return this.client.getSource();
-    }
+	@Override
+	public String getSource() {
+		return this.client.getSource();
+	}
 
-    @Override
-    public Privilege getPrivilege(String privilegeId) throws NoSuchPrivilegeException {
-        throw new NoSuchPrivilegeException("Keycloak plugin doesn't support privileges");
-    }
+	@Override
+	public Privilege getPrivilege(String privilegeId) throws NoSuchPrivilegeException {
+		throw new NoSuchPrivilegeException("Keycloak plugin doesn't support privileges");
+	}
 
-    @Override
-    public Role getRole(String roleId) throws NoSuchRoleException {
-        Role role = this.client.findRoleByRoleId(roleId);
-        if (role == null) {
-            throw new NoSuchRoleException("Failed to get role " + roleId + " from Keycloak.");
-        } else {
-            return role;
-        }
-    }
+	@Override
+	public Privilege getPrivilegeByName(String privilegeName) throws NoSuchPrivilegeException {
+		throw new NoSuchPrivilegeException("Keycloak plugin doesn't support privileges");
+	}
 
-    @Override
-    public Set<Privilege> listPrivileges() {
-        return Collections.emptySet();
-    }
+	@Override
+	public List<Privilege> getPrivileges(Set<String> privilegeIds) {
+		throw new NoSuchPrivilegeException("Keycloak plugin doesn't support privileges");
+	}
 
-    @Override
-    public Set<Role> listRoles() {
-        return this.client.findRoles();
-    }
+	@Override
+	public Role getRole(String roleId) throws NoSuchRoleException {
+		Role role = this.client.findRoleByRoleId(roleId);
+		if (role == null) {
+			throw new NoSuchRoleException("Failed to get role " + roleId + " from Keycloak.");
+		}
+		else {
+			return role;
+		}
+	}
+
+	@Override
+	public Set<Privilege> listPrivileges() {
+		return Collections.emptySet();
+	}
+
+	@Override
+	public Set<Role> listRoles() {
+		return this.client.findRoles();
+	}
+
 }
